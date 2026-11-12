@@ -135,7 +135,6 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
     <ol>
       <li><a href="#about" class="on">About you</a></li>
       <li><a href="#contact">How to reach you</a></li>
-      <li><a href="#household">Travel companions</a></li>
       <li><a href="#documents">Travel documents</a></li>
       <li><a href="#loyalty">Loyalty programs</a></li>
       <li><a href="#prefs">Preferences</a></li>
@@ -143,7 +142,7 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
       <li><a href="#payment">Payment</a></li>
       <li><a href="#review">Review</a></li>
     </ol>
-    <p class="note">Your progress is saved on this device until you send it. We never ask for payment card details on this form.</p>
+    <p class="note">We never ask for payment card details on this form.</p>
   </nav>
 
   <form id="form" novalidate>
@@ -205,25 +204,6 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
       </div>
     </section>
 
-    <section id="household">
-      <h2>People who travel with you</h2>
-      <p class="why">Family or colleagues you often book together, and anyone who arranges travel on your behalf.</p>
-      <div class="rep" id="rep-trav" data-max="4"></div>
-      <button type="button" class="add" data-add="trav">Add a traveler</button>
-
-      <label class="toggle" style="margin-top:24px"><input type="checkbox" id="has_asst" data-reveal="asst-box"> An assistant or travel planner books for me</label>
-      <div class="reveal" id="asst-box">
-        <div class="row">
-          <div class="f s4"><label for="afirst">First name</label><input id="afirst" name="asst_1_given" type="text"></div>
-          <div class="f s4"><label for="alast">Last name</label><input id="alast" name="asst_1_surname" type="text"></div>
-          <div class="f s4"><label for="aphone">Phone</label><input id="aphone" name="asst_1_phone" type="tel" inputmode="tel"></div>
-        </div>
-        <div class="row">
-          <div class="f s8"><label for="aemail">Email</label><input id="aemail" name="asst_1_email" type="email"><div class="hint">Itineraries and confirmations will copy this address.</div></div>
-        </div>
-      </div>
-    </section>
-
     <section id="documents">
       <h2>Travel documents</h2>
       <p class="why">Only add what you have. Tick a box to add that document.</p>
@@ -254,6 +234,9 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
           <div class="f s5"><label for="ktncty">Issuing country</label><select id="ktncty" name="doc_ktn_issue_country" data-countries></select></div>
         </div>
         <div class="row">
+          <div class="f s5"><label for="ktnexp">Expiration date <span class="opt">optional</span></label><input id="ktnexp" name="doc_ktn_expire" type="date"></div>
+        </div>
+        <div class="row">
           <div class="f s7"><label for="ktn2">Second Known Traveler Number <span class="opt">optional</span></label><input id="ktn2" name="doc_ktn2_number" type="text" inputmode="numeric" autocomplete="off"><input type="hidden" name="doc_ktn2_type" value="KTID"><div class="hint">If you have both a PreCheck number and a Global Entry PASSID, add the other one here.</div></div>
           <div class="f s5"><label for="ktn2cty">Issuing country</label><select id="ktn2cty" name="doc_ktn2_issue_country" data-countries></select></div>
         </div>
@@ -275,7 +258,7 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
 
     <section id="loyalty">
       <h2>Loyalty programs</h2>
-      <p class="why">Add every program you belong to. Partner airlines are handled for you: one SkyTeam or Star Alliance number covers the alliance.</p>
+      <p class="why">Add every program you belong to. Partner airlines are handled for you: one SkyTeam or Star Alliance number covers the alliance. If a program isn't listed, tell us in the notes box under Preferences.</p>
 
       <h3 style="font-size:13px;margin:20px 0 8px">Airlines</h3>
       <div class="rep" id="rep-air" data-prefix="al" data-max="8"></div>
@@ -377,8 +360,8 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
         <div class="f s6"><label for="adv_code">Your advisor code</label><input id="adv_code" type="text" placeholder="RL"></div>
       </div>
       <div class="row">
-        <div class="f s4"><label for="adv_pcc">PCC</label><select id="adv_pcc"><option>2AHK</option><option>1AKL</option><option>2APK</option><option>WG0L</option><option>7AYL</option></select></div>
-        <div class="f s8"><label for="adv_agy">Agency profile <span class="opt">optional</span></label><input id="adv_agy" type="text" placeholder="AGY2AHK"><div class="hint">Exact profile name in Sabre.</div></div>
+        <div class="f s4"><label for="adv_pcc">PCC</label><select id="adv_pcc"><option>2AHK</option><option>1AKL</option><option>2APK</option><option>WG0L</option><option>DX0M</option><option>7AYL</option></select></div>
+        <div class="f s8"><label for="adv_agy">Agency profile <span class="opt">optional</span></label><select id="adv_agy"></select><input id="adv_agy_text" type="text" placeholder="Exact profile name in Sabre" class="hidden"><div class="hint" id="adv_agy_hint"></div></div>
       </div>
       <div class="row">
         <div class="f s8"><label for="adv_crp">Corporate or group profile <span class="opt">optional</span></label><input id="adv_crp" type="text" placeholder="MORVANT FAMILY"></div>
@@ -415,6 +398,11 @@ const CONFIG = { ENDPOINT: "https://default804724d58ccc4e988bcc239bfaa594.8b.env
 //   ...?pcc=2AHK&crp=MORVANT%20FAMILY&agy=AGY2AHK&adv=RL&name=Rebecca
 // They are never shown to the traveler except the advisor's first name.
 const ROUTING_KEYS = ["pcc","agy","crp","grp","adv","name"];
+// Agency profiles an advisor can pick, per PCC. Names must match Sabre exactly.
+// A PCC with no list here falls back to a typed name.
+const AGY_BY_PCC = {
+  "2AHK": ["AGY2AHK", "AGYET"],
+};
 
 const COUNTRIES = [["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],["AO","Angola"],["AI","Anguilla"],["AQ","Antarctica"],["AG","Antigua and Barbuda"],["AR","Argentina"],["AM","Armenia"],["AW","Aruba"],["AU","Australia"],["AT","Austria"],["AZ","Azerbaijan"],["BS","Bahamas"],["BH","Bahrain"],["BD","Bangladesh"],["BB","Barbados"],["BY","Belarus"],["BE","Belgium"],["BZ","Belize"],["BJ","Benin"],["BM","Bermuda"],["BT","Bhutan"],["BO","Bolivia"],["BQ","Bonaire, Sint Eustatius and Saba"],["BA","Bosnia and Herzegovina"],["BW","Botswana"],["BV","Bouvet Island"],["BR","Brazil"],["IO","British Indian Ocean Territory"],["VG","British Virgin Islands"],["BN","Brunei"],["BG","Bulgaria"],["BF","Burkina Faso"],["BI","Burundi"],["CV","Cabo Verde"],["KH","Cambodia"],["CM","Cameroon"],["CA","Canada"],["KY","Cayman Islands"],["CF","Central African Republic"],["TD","Chad"],["CL","Chile"],["CN","China"],["CX","Christmas Island"],["CC","Cocos (Keeling) Islands"],["CO","Colombia"],["KM","Comoros"],["CD","Congo (DRC)"],["CG","Congo (Republic)"],["CK","Cook Islands"],["CR","Costa Rica"],["HR","Croatia"],["CU","Cuba"],["CW","Curaçao"],["CY","Cyprus"],["CZ","Czechia"],["CI","Côte d'Ivoire"],["DK","Denmark"],["DJ","Djibouti"],["DM","Dominica"],["DO","Dominican Republic"],["EC","Ecuador"],["EG","Egypt"],["SV","El Salvador"],["GQ","Equatorial Guinea"],["ER","Eritrea"],["EE","Estonia"],["SZ","Eswatini"],["ET","Ethiopia"],["FK","Falkland Islands"],["FO","Faroe Islands"],["FJ","Fiji"],["FI","Finland"],["FR","France"],["GF","French Guiana"],["PF","French Polynesia"],["TF","French Southern Territories"],["GA","Gabon"],["GM","Gambia"],["GE","Georgia"],["DE","Germany"],["GH","Ghana"],["GI","Gibraltar"],["GR","Greece"],["GL","Greenland"],["GD","Grenada"],["GP","Guadeloupe"],["GU","Guam"],["GT","Guatemala"],["GG","Guernsey"],["GN","Guinea"],["GW","Guinea-Bissau"],["GY","Guyana"],["HT","Haiti"],["HM","Heard Island and McDonald Islands"],["HN","Honduras"],["HK","Hong Kong"],["HU","Hungary"],["IS","Iceland"],["IN","India"],["ID","Indonesia"],["IR","Iran"],["IQ","Iraq"],["IE","Ireland"],["IM","Isle of Man"],["IL","Israel"],["IT","Italy"],["JM","Jamaica"],["JP","Japan"],["JE","Jersey"],["JO","Jordan"],["KZ","Kazakhstan"],["KE","Kenya"],["KI","Kiribati"],["XK","Kosovo"],["KW","Kuwait"],["KG","Kyrgyzstan"],["LA","Laos"],["LV","Latvia"],["LB","Lebanon"],["LS","Lesotho"],["LR","Liberia"],["LY","Libya"],["LI","Liechtenstein"],["LT","Lithuania"],["LU","Luxembourg"],["MO","Macau"],["MG","Madagascar"],["MW","Malawi"],["MY","Malaysia"],["MV","Maldives"],["ML","Mali"],["MT","Malta"],["MH","Marshall Islands"],["MQ","Martinique"],["MR","Mauritania"],["MU","Mauritius"],["YT","Mayotte"],["MX","Mexico"],["FM","Micronesia"],["MD","Moldova"],["MC","Monaco"],["MN","Mongolia"],["ME","Montenegro"],["MS","Montserrat"],["MA","Morocco"],["MZ","Mozambique"],["MM","Myanmar"],["NA","Namibia"],["NR","Nauru"],["NP","Nepal"],["NL","Netherlands"],["NC","New Caledonia"],["NZ","New Zealand"],["NI","Nicaragua"],["NE","Niger"],["NG","Nigeria"],["NU","Niue"],["NF","Norfolk Island"],["KP","North Korea"],["MK","North Macedonia"],["MP","Northern Mariana Islands"],["NO","Norway"],["OM","Oman"],["PK","Pakistan"],["PW","Palau"],["PS","Palestine"],["PA","Panama"],["PG","Papua New Guinea"],["PY","Paraguay"],["PE","Peru"],["PH","Philippines"],["PN","Pitcairn"],["PL","Poland"],["PT","Portugal"],["PR","Puerto Rico"],["QA","Qatar"],["RO","Romania"],["RU","Russia"],["RW","Rwanda"],["RE","Réunion"],["BL","Saint Barthélemy"],["SH","Saint Helena, Ascension and Tristan da Cunha"],["KN","Saint Kitts and Nevis"],["LC","Saint Lucia"],["MF","Saint Martin (French part)"],["PM","Saint Pierre and Miquelon"],["VC","Saint Vincent and the Grenadines"],["WS","Samoa"],["SM","San Marino"],["ST","Sao Tome and Principe"],["SA","Saudi Arabia"],["SN","Senegal"],["RS","Serbia"],["SC","Seychelles"],["SL","Sierra Leone"],["SG","Singapore"],["SX","Sint Maarten"],["SK","Slovakia"],["SI","Slovenia"],["SB","Solomon Islands"],["SO","Somalia"],["ZA","South Africa"],["GS","South Georgia and the South Sandwich Islands"],["KR","South Korea"],["SS","South Sudan"],["ES","Spain"],["LK","Sri Lanka"],["SD","Sudan"],["SR","Suriname"],["SJ","Svalbard and Jan Mayen"],["SE","Sweden"],["CH","Switzerland"],["SY","Syria"],["TW","Taiwan"],["TJ","Tajikistan"],["TZ","Tanzania"],["TH","Thailand"],["TL","Timor-Leste"],["TG","Togo"],["TK","Tokelau"],["TO","Tonga"],["TT","Trinidad and Tobago"],["TN","Tunisia"],["TM","Turkmenistan"],["TC","Turks and Caicos Islands"],["TV","Tuvalu"],["TR","Türkiye"],["UM","US Minor Outlying Islands"],["VI","US Virgin Islands"],["UG","Uganda"],["UA","Ukraine"],["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["UY","Uruguay"],["UZ","Uzbekistan"],["VU","Vanuatu"],["VA","Vatican City"],["VE","Venezuela"],["VN","Vietnam"],["WF","Wallis and Futuna"],["EH","Western Sahara"],["YE","Yemen"],["ZM","Zambia"],["ZW","Zimbabwe"],["AX","Åland Islands"],["XX","Stateless"]];
 const AIRLINES = [["AA","American AAdvantage"],["DL","Delta SkyMiles"],["UA","United MileagePlus"],["WN","Southwest Rapid Rewards"],["B6","JetBlue TrueBlue"],["AS","Alaska Mileage Plan"],["AF","Air France-KLM Flying Blue"],["BA","British Airways Executive Club"],["EK","Emirates Skywards"],["LH","Lufthansa Miles & More"],["AC","Air Canada Aeroplan"],["VS","Virgin Atlantic Flying Club"],["QR","Qatar Privilege Club"],["EY","Etihad Guest"],["LY","El Al Matmid"],["SQ","Singapore KrisFlyer"],["CX","Cathay Pacific Asia Miles"],["QF","Qantas Frequent Flyer"],["NH","ANA Mileage Club"],["JL","JAL Mileage Bank"],["TK","Turkish Miles&Smiles"],["IB","Iberia Plus"],["LX","SWISS Miles & More"],["AM","Aeromexico Rewards"],["CM","Copa ConnectMiles"],["AV","Avianca LifeMiles"],["LA","LATAM Pass"],["KE","Korean Air SKYPASS"],["HA","Hawaiian HawaiianMiles"],["F9","Frontier Miles"],["NK","Spirit Free Spirit"]];
@@ -449,11 +437,21 @@ $$(".traveler-link").forEach(a => a.addEventListener("click", e => { e.preventDe
 (function(){
   let mode=""; try{ mode=new URLSearchParams(location.search).get("mode")||""; }catch(e){}
   if (mode==="advisor" || location.hash==="#advisor") showAdvisor();
+  const agySel = $("#adv_agy"), agyTxt = $("#adv_agy_text");
+  const syncAgy = () => {
+    const list = AGY_BY_PCC[$("#adv_pcc").value];
+    agySel.classList.toggle("hidden", !list); agyTxt.classList.toggle("hidden", !!list);
+    agySel.innerHTML = '<option value="">None</option>' + (list || []).map(n => `<option>${n}</option>`).join("");
+    agyTxt.value = "";
+    $("#adv_agy_hint").textContent = list ? "Pick from the agency profiles set up for this PCC." : "No list for this PCC yet. Type the exact profile name in Sabre.";
+  };
+  $("#adv_pcc").addEventListener("change", syncAgy); syncAgy();
+  const agyValue = () => AGY_BY_PCC[$("#adv_pcc").value] ? agySel.value : agyTxt.value;
   $("#btn-link").addEventListener("click", () => {
     const base = location.origin + location.pathname;
     const p = new URLSearchParams();
     const put=(k,v)=>{ if(v && v.trim()) p.set(k, v.trim()); };
-    put("pcc",$("#adv_pcc").value); put("agy",$("#adv_agy").value); put($("#adv_crpt").value,$("#adv_crp").value); put("adv",$("#adv_code").value); put("name",$("#adv_name").value);
+    put("pcc",$("#adv_pcc").value); put("agy",agyValue()); put($("#adv_crpt").value,$("#adv_crp").value); put("adv",$("#adv_code").value); put("name",$("#adv_name").value);
     const url = base + "?" + p.toString();
     $("#linkbox").value = url; $("#linkout").classList.remove("hidden");
     const to = $("#adv_temail").value.trim();
@@ -465,9 +463,8 @@ $$(".traveler-link").forEach(a => a.addEventListener("click", e => { e.preventDe
 // ---- Repeating blocks ------------------------------------------------------
 function countryOptions() { const us = COUNTRIES.find(([c]) => c === "US"); return `<option value="US" selected>${us[1]}</option><option disabled>──────────</option>` + COUNTRIES.filter(([c]) => c !== "US").map(([c,n]) => `<option value="${c}">${n}</option>`).join(""); }
 document.querySelectorAll("select[data-countries]").forEach(s => s.innerHTML = countryOptions());
-function optionList(list) { return '<option value="">Choose…</option>' + list.map(([c,n]) => `<option value="${c}">${n}</option>`).join("") + '<option value="OTHER">Other (tell us below)</option>'; }
+function optionList(list) { return '<option value="">Choose…</option>' + list.map(([c,n]) => `<option value="${c}">${n}</option>`).join(""); }
 const REP = {
-  trav:  { host:"#rep-trav",  list:null,     prefix:"rel", label:"Traveler", max:4 },
   air:   { host:"#rep-air",   list:AIRLINES, prefix:"al", label:"Airline program",  max:8 },
   hotel: { host:"#rep-hotel", list:HOTELS,   prefix:"hl", label:"Hotel program",    max:5 },
   car:   { host:"#rep-car",   list:CARS,     prefix:"cr", label:"Car rental program", max:5 },
@@ -478,20 +475,6 @@ function addItem(kind, data) {
   const i = host.children.length + 1;
   const el = document.createElement("div");
   el.className = "item";
-  if (kind === "trav") {
-    el.innerHTML = `
-      <div class="grid">
-        <div class="f s4"><label>First name</label><input type="text" name="rel_${i}_given"></div>
-        <div class="f s4"><label>Last name</label><input type="text" name="rel_${i}_surname"></div>
-        <div class="f s4"><label>Relationship</label><select name="rel_${i}_relation"><option value="">Choose…</option><option value="SPO">Spouse / partner</option><option value="CHD">Child</option><option value="PAR">Parent</option><option value="SIB">Sibling</option><option value="COL">Colleague</option><option value="FRD">Friend</option><option value="OTH">Other</option></select></div>
-        <div class="f s4"><label>Date of birth <span class="opt">optional</span></label><input type="date" name="rel_${i}_dob"></div>
-        <div class="f s8"><label>Email <span class="opt">optional</span></label><input type="email" name="rel_${i}_email"></div>
-      </div>
-      <button type="button" class="rm" aria-label="Remove this traveler">Remove</button>`;
-    host.appendChild(el);
-    el.querySelector(".rm").addEventListener("click", () => { el.remove(); renumber(kind); save(); });
-    return el;
-  }
   el.innerHTML = `
     <div class="grid">
       <div class="f s7"><label>${r.label}</label><select name="${r.prefix}_${i}_vendor">${optionList(r.list)}</select></div>
@@ -520,39 +503,19 @@ $$("[data-reveal]").forEach(cb => {
   sync();
 });
 
-// ---- Draft save (per-device convenience only) ------------------------------
-let saveTimer;
+// ---- No drafts: the form starts blank on every load -----------------------
+// One device is often used for several travelers, so nothing is kept between visits.
 function serialize() {
   const out = {};
   new FormData($("#form")).forEach((v, k) => { if (String(v).trim() !== "") out[k] = String(v).trim(); });
-  $$("[data-reveal]").forEach(cb => out["_" + cb.id] = cb.checked ? "1" : "");
-  Object.keys(REP).forEach(k => out["_n_" + k] = $(REP[k].host).children.length);
   return out;
 }
-function save() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize())); $("#save-status").textContent = "Draft saved on this device"; } catch (e) {}
-  }, 400);
-}
-function restore() {
-  let d = null;
-  try { d = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch (e) {}
-  Object.keys(REP).forEach(k => { const n = d ? (+d["_n_" + k] || 0) : 0; for (let i = 0; i < n; i++) addItem(k); });
-  if (!d) { addItem("air"); return; }
-  Object.entries(d).forEach(([k, v]) => {
-    if (k.startsWith("_")) { const cb = document.getElementById(k.slice(1)); if (cb) cb.checked = v === "1"; return; }
-    const els = document.getElementsByName(k);
-    if (!els.length) return;
-    if (els[0].type === "radio") { els.forEach(r => r.checked = r.value === v); } else els[0].value = v;
-  });
-  $$("[data-reveal]").forEach(cb => document.getElementById(cb.dataset.reveal).classList.toggle("open", cb.checked));
-  if (!$("#rep-air").children.length) addItem("air");
-  $("#save-status").textContent = "Draft restored";
-}
-restore();
-$("#form").addEventListener("input", save);
-$("#form").addEventListener("change", save);
+function save() {}
+try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}      // clear any draft left by the old version
+$("#form").reset();                                              // undo the browser's own field restore
+$$("[data-reveal]").forEach(cb => document.getElementById(cb.dataset.reveal).classList.toggle("open", cb.checked));
+addItem("air");
+window.addEventListener("pageshow", e => { if (e.persisted) location.reload(); });   // back/forward cache
 
 // ---- Section rail highlight -------------------------------------------------
 const links = $$(".rail a");
@@ -583,23 +546,24 @@ function payload() {
   Object.keys(d).forEach(k => { if (k.startsWith("_")) delete d[k]; });
   // drop hidden-section values the traveler didn't enable
   if (!$("#has_ktn").checked) Object.keys(d).filter(k => k.startsWith("doc_ktn")).forEach(k => delete d[k]);
-  if (!d.doc_ktn_number) ["doc_ktn_number","doc_ktn_type","doc_ktn_issue_country"].forEach(k => delete d[k]);
+  if (!d.doc_ktn_number) ["doc_ktn_number","doc_ktn_type","doc_ktn_issue_country","doc_ktn_expire"].forEach(k => delete d[k]);
   if (!d.doc_ktn2_number) ["doc_ktn2_number","doc_ktn2_type","doc_ktn2_issue_country"].forEach(k => delete d[k]);
-  delete d.doc_ktn_expire;
   if (!$("#has_redress").checked) delete d.doc_redress_number, delete d.doc_redress_type;
   if (!$("#has_prc").checked) delete d.doc_resident_number, delete d.doc_resident_type, delete d.doc_resident_expire;
-  if (!$("#has_asst").checked) Object.keys(d).filter(k => k.startsWith("asst_")).forEach(k => delete d[k]);
   if (!$("#has_emg2").checked) Object.keys(d).filter(k => k.startsWith("emerg_2_")).forEach(k => delete d[k]);
-  for (let i = 1; i <= 4; i++) if (!d[`rel_${i}_given`] && !d[`rel_${i}_surname`]) Object.keys(d).filter(k => k.startsWith(`rel_${i}_`)).forEach(k => delete d[k]);
   if (!$("#has_pspt").checked) Object.keys(d).filter(k => k.startsWith("doc_passport")).forEach(k => delete d[k]);
   if (!$("#pname_diff").checked) ["doc_passport_given","doc_passport_middle","doc_passport_surname"].forEach(k => delete d[k]);
   if (d.phone_2_number === undefined) delete d.phone_2_type;
   if (d.email_2_address === undefined) delete d.email_2_type;
-  if (d.address_1_line_1 === undefined) delete d.address_1_type;
+  if (d.address_1_line_1 === undefined) {
+    delete d.address_1_type;
+    // the country box is pre-set to US, so on its own it says nothing; a country the traveler changed is kept
+    if (d.address_1_country === "US") delete d.address_1_country;
+  }
   // drop empty loyalty rows
   Object.values(REP).forEach(r => { if (!r.list) return; for (let i = 1; i <= r.max; i++) { if (!d[`${r.prefix}_${i}_vendor`] && !d[`${r.prefix}_${i}_number`]) Object.keys(d).filter(k => k.startsWith(`${r.prefix}_${i}_`)).forEach(k => delete d[k]); } });
   if (d.home_airport) d.home_airport = d.home_airport.toUpperCase();
-  Object.assign(d, { routing_pcc: routing.pcc || "", routing_agy: routing.agy || "", routing_crp: routing.crp || "", routing_grp: routing.grp || "", routing_advisor: routing.adv || "", submitted_at: new Date().toISOString(), form_version: "1.1" });
+  Object.assign(d, { routing_pcc: routing.pcc || "", routing_agy: routing.agy || "", routing_crp: routing.crp || "", routing_grp: routing.grp || "", routing_advisor: routing.adv || "", submitted_at: new Date().toISOString(), form_version: "1.2" });
   return d;
 }
 const LABELS = { given_name:"First name", middle_name:"Middle name", surname:"Last name", name_suffix:"Suffix", preferred_first_name:"Preferred name", birth_date:"Date of birth", gender:"Gender", phone_1_number:"Mobile", phone_2_number:"Other phone", email_1_address:"Email", email_2_address:"Other email", address_1_line_1:"Address", address_1_line_2:"Apt / unit", address_1_city:"City", address_1_state:"State", address_1_postal:"ZIP", address_1_country:"Country", doc_ktn_number:"Known Traveler Number", doc_ktn_issue_country:"KTN issued by", doc_ktn2_number:"Second Known Traveler Number", doc_ktn2_issue_country:"Second KTN issued by", doc_redress_number:"Redress number", doc_passport_number:"Passport number", doc_passport_expire:"Passport expiration", doc_passport_issue_country:"Passport issued by", doc_passport_nationality:"Nationality", doc_passport_given:"Passport first name", doc_passport_middle:"Passport middle name", doc_passport_surname:"Passport last name", seat_pref:"Seat", meal_pref:"Meal", home_airport:"Home airport", remark_1_text:"Notes", emerg_1_given:"Contact first name", emerg_1_surname:"Contact last name", emerg_1_relation:"Relationship", emerg_1_phone:"Contact phone", emerg_1_email:"Contact email" };
@@ -608,8 +572,6 @@ function renderReview(d) {
   const row = (k, v) => v ? `<tr><td>${k}</td><td>${v}</td></tr>` : "";
   const sec = (title, rows) => rows.join("") ? `<h2>${title}</h2><table><tbody>${rows.join("")}</tbody></table>` : "";
   const loy = (r, list) => { const rows = []; for (let i = 1; i <= r.max; i++) if (d[`${r.prefix}_${i}_vendor`] || d[`${r.prefix}_${i}_number`]) rows.push(row(nameFor(list, d[`${r.prefix}_${i}_vendor`]), [d[`${r.prefix}_${i}_number`] || "—", d[`${r.prefix}_${i}_name`] ? "as " + d[`${r.prefix}_${i}_name`] : ""].filter(Boolean).join(" · "))); return rows; };
-  const rels = []; for (let i = 1; i <= 4; i++) if (d[`rel_${i}_given`] || d[`rel_${i}_surname`]) rels.push(row([d[`rel_${i}_given`], d[`rel_${i}_surname`]].filter(Boolean).join(" "), [d[`rel_${i}_relation`], d[`rel_${i}_dob`], d[`rel_${i}_email`]].filter(Boolean).join(" · ")));
-  if (d.asst_1_given || d.asst_1_surname) rels.push(row("Assistant / planner", [[d.asst_1_given, d.asst_1_surname].filter(Boolean).join(" "), d.asst_1_phone, d.asst_1_email].filter(Boolean).join(" · ")));
   const roomName = { K:"King", Q:"Queen", T:"Twin / two beds", S:"Suite" }[d.hotel_room_type];
   const seat = { A:"Aisle", W:"Window" }[d.seat_pref] || "No preference";
   const html = `
@@ -617,8 +579,7 @@ function renderReview(d) {
     <p class="lede">Anything wrong? Go back and fix it before you send.</p>
     ${sec("About you", [row("Name", [d.given_name, d.middle_name, d.surname, d.name_suffix].filter(Boolean).join(" ")), row("Preferred name", d.preferred_first_name), row("Date of birth", d.birth_date), row("Gender", { M:"Male", F:"Female", X:"X" }[d.gender])])}
     ${sec("How to reach you", [row("Mobile", d.phone_1_number), row("Other phone", d.phone_2_number), row("Email", d.email_1_address), row("Other email", d.email_2_address), row("Home address", [d.address_1_line_1, d.address_1_line_2, [d.address_1_city, d.address_1_state, d.address_1_postal].filter(Boolean).join(" "), d.address_1_country].filter(Boolean).join(", "))])}
-    ${sec("Travel companions", rels)}
-    ${sec("Travel documents", [row("Known Traveler Number", d.doc_ktn_number ? `${d.doc_ktn_number} · ${nameFor(COUNTRIES, d.doc_ktn_issue_country)}` : ""), row("Second Known Traveler Number", d.doc_ktn2_number ? `${d.doc_ktn2_number} · ${nameFor(COUNTRIES, d.doc_ktn2_issue_country)}` : ""), row("Redress number", d.doc_redress_number), row("Permanent resident card", d.doc_resident_number), row("Passport", d.doc_passport_number ? `${d.doc_passport_number} · expires ${d.doc_passport_expire || "?"} · ${nameFor(COUNTRIES, d.doc_passport_issue_country || "")}` : ""), row("Name on passport", [d.doc_passport_given, d.doc_passport_middle, d.doc_passport_surname].filter(Boolean).join(" "))])}
+    ${sec("Travel documents", [row("Known Traveler Number", d.doc_ktn_number ? `${d.doc_ktn_number} · ${nameFor(COUNTRIES, d.doc_ktn_issue_country)}${d.doc_ktn_expire ? " · expires " + d.doc_ktn_expire : ""}` : ""), row("Second Known Traveler Number", d.doc_ktn2_number ? `${d.doc_ktn2_number} · ${nameFor(COUNTRIES, d.doc_ktn2_issue_country)}` : ""), row("Redress number", d.doc_redress_number), row("Permanent resident card", d.doc_resident_number), row("Passport", d.doc_passport_number ? `${d.doc_passport_number} · expires ${d.doc_passport_expire || "?"} · ${nameFor(COUNTRIES, d.doc_passport_issue_country || "")}` : ""), row("Name on passport", [d.doc_passport_given, d.doc_passport_middle, d.doc_passport_surname].filter(Boolean).join(" "))])}
     ${sec("Airline programs", loy(REP.air, AIRLINES))}
     ${sec("Hotel programs", loy(REP.hotel, HOTELS))}
     ${sec("Car rental programs", loy(REP.car, CARS))}
@@ -658,7 +619,7 @@ async function send(d) {
   }
 }
 function finish(d, note) {
-  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  $("#form").reset();
   $("#reviewpane").classList.add("hidden");
   $("#donepane").innerHTML = `<div class="done"><h2>Sent</h2><p>Thank you, ${d.preferred_first_name || d.given_name}. Your advisor will set up your profile and reach out if anything needs clarifying.</p>${note ? `<p class="status">${note}</p>` : ""}</div>`;
   $("#donepane").classList.remove("hidden");
