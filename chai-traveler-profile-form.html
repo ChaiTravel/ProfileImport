@@ -357,14 +357,14 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
       <p class="lede">Fill this in once per traveler. The link you get carries the PCC and profile associations so the traveler never sees them and nothing has to be typed later.</p>
       <div class="row">
         <div class="f s6"><label for="adv_name">Your first name</label><input id="adv_name" type="text"></div>
-        <div class="f s6"><label for="adv_code">Your advisor code</label><input id="adv_code" type="text" placeholder="RL"></div>
+        <div class="f s6"><label for="adv_code">Your advisor code</label><input id="adv_code" type="text" maxlength="2" autocomplete="off"><div class="hint">Two-letter agent ID.</div></div>
       </div>
       <div class="row">
-        <div class="f s4"><label for="adv_pcc">PCC</label><select id="adv_pcc"><option>2AHK</option><option>1AKL</option><option>2APK</option><option>WG0L</option><option>DX0M</option><option>7AYL</option></select></div>
-        <div class="f s8"><label for="adv_agy">Agency profile <span class="opt">optional</span></label><select id="adv_agy"></select><input id="adv_agy_text" type="text" placeholder="Exact profile name in Sabre" class="hidden"><div class="hint" id="adv_agy_hint"></div></div>
+        <div class="f s4"><label for="adv_pcc">PCC</label><select id="adv_pcc"><option value="">Choose a PCC</option><option>2AHK</option><option>1AKL</option><option>2APK</option><option>WG0L</option><option>DX0M</option><option>7AYL</option></select><div class="err">Choose a PCC.</div></div>
+        <div class="f s8"><label for="adv_agy">Agency profile <span class="opt">optional</span></label><select id="adv_agy"></select><input id="adv_agy_text" type="text" class="hidden"><div class="hint" id="adv_agy_hint"></div></div>
       </div>
       <div class="row">
-        <div class="f s8"><label for="adv_crp">Corporate or group profile <span class="opt">optional</span></label><input id="adv_crp" type="text" placeholder="MORVANT FAMILY"></div>
+        <div class="f s8"><label for="adv_crp">Corporate or group profile <span class="opt">optional</span></label><input id="adv_crp" type="text"><div class="hint">Must be entered exactly as it reads in Sabre.</div></div>
         <div class="f s4"><label for="adv_crpt">Type</label><select id="adv_crpt"><option value="crp">Corporate (CRP)</option><option value="grp">Group (GRP)</option></select></div>
       </div>
       <div class="row">
@@ -395,14 +395,22 @@ legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
 const CONFIG = { ENDPOINT: "https://default804724d58ccc4e988bcc239bfaa594.8b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/2dbc0b6f95bd41b8bf57f38da86a035f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jhPDFg8z9AW2GK0Y7YRTLl157Np5RbZhUasvaaL1qBI" };
 
 // Routing fields come from the link the advisor sends, e.g.
-//   ...?pcc=2AHK&crp=MORVANT%20FAMILY&agy=AGY2AHK&adv=RL&name=Rebecca
+//   ...?pcc=2AHK&crp=COMPANY%20NAME&agy=AGY2AHK&adv=AB&name=Advisor
 // They are never shown to the traveler except the advisor's first name.
 const ROUTING_KEYS = ["pcc","agy","crp","grp","adv","name"];
 // Agency profiles an advisor can pick, per PCC. Names must match Sabre exactly.
 // A PCC with no list here falls back to a typed name.
 const AGY_BY_PCC = {
-  "2AHK": ["AGY2AHK", "AGYET"],
+  "2AHK": ["AGY2AHK", "AGY2AHK ADRIANA", "AGYET"],
+  "2APK": ["AGY2APK"],
+  "WG0L": ["AGYWG0L CATHY", "AGYWG0L ERIN"],
+  "1AKL": ["AGY1AKL"],
+  "DX0M": ["AGYET"],
+  "7AYL": ["AGY7AYL", "AGYCOTOUR", "AGYEVILPANDA", "AGYGTB", "AGYGTN", "AGYITC", "AGYMARTA", "AGYPTS", "AGYROBIN", "AGYTRAVIERGE", "AGYTTO"],
 };
+// The agency profile preselected when a PCC is chosen. A PCC with a single agency profile starts
+// on that one; a PCC with several and no entry here starts on "None".
+const AGY_DEFAULT = { "2AHK": "AGY2AHK" };
 
 const COUNTRIES = [["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AS","American Samoa"],["AD","Andorra"],["AO","Angola"],["AI","Anguilla"],["AQ","Antarctica"],["AG","Antigua and Barbuda"],["AR","Argentina"],["AM","Armenia"],["AW","Aruba"],["AU","Australia"],["AT","Austria"],["AZ","Azerbaijan"],["BS","Bahamas"],["BH","Bahrain"],["BD","Bangladesh"],["BB","Barbados"],["BY","Belarus"],["BE","Belgium"],["BZ","Belize"],["BJ","Benin"],["BM","Bermuda"],["BT","Bhutan"],["BO","Bolivia"],["BQ","Bonaire, Sint Eustatius and Saba"],["BA","Bosnia and Herzegovina"],["BW","Botswana"],["BV","Bouvet Island"],["BR","Brazil"],["IO","British Indian Ocean Territory"],["VG","British Virgin Islands"],["BN","Brunei"],["BG","Bulgaria"],["BF","Burkina Faso"],["BI","Burundi"],["CV","Cabo Verde"],["KH","Cambodia"],["CM","Cameroon"],["CA","Canada"],["KY","Cayman Islands"],["CF","Central African Republic"],["TD","Chad"],["CL","Chile"],["CN","China"],["CX","Christmas Island"],["CC","Cocos (Keeling) Islands"],["CO","Colombia"],["KM","Comoros"],["CD","Congo (DRC)"],["CG","Congo (Republic)"],["CK","Cook Islands"],["CR","Costa Rica"],["HR","Croatia"],["CU","Cuba"],["CW","Curaçao"],["CY","Cyprus"],["CZ","Czechia"],["CI","Côte d'Ivoire"],["DK","Denmark"],["DJ","Djibouti"],["DM","Dominica"],["DO","Dominican Republic"],["EC","Ecuador"],["EG","Egypt"],["SV","El Salvador"],["GQ","Equatorial Guinea"],["ER","Eritrea"],["EE","Estonia"],["SZ","Eswatini"],["ET","Ethiopia"],["FK","Falkland Islands"],["FO","Faroe Islands"],["FJ","Fiji"],["FI","Finland"],["FR","France"],["GF","French Guiana"],["PF","French Polynesia"],["TF","French Southern Territories"],["GA","Gabon"],["GM","Gambia"],["GE","Georgia"],["DE","Germany"],["GH","Ghana"],["GI","Gibraltar"],["GR","Greece"],["GL","Greenland"],["GD","Grenada"],["GP","Guadeloupe"],["GU","Guam"],["GT","Guatemala"],["GG","Guernsey"],["GN","Guinea"],["GW","Guinea-Bissau"],["GY","Guyana"],["HT","Haiti"],["HM","Heard Island and McDonald Islands"],["HN","Honduras"],["HK","Hong Kong"],["HU","Hungary"],["IS","Iceland"],["IN","India"],["ID","Indonesia"],["IR","Iran"],["IQ","Iraq"],["IE","Ireland"],["IM","Isle of Man"],["IL","Israel"],["IT","Italy"],["JM","Jamaica"],["JP","Japan"],["JE","Jersey"],["JO","Jordan"],["KZ","Kazakhstan"],["KE","Kenya"],["KI","Kiribati"],["XK","Kosovo"],["KW","Kuwait"],["KG","Kyrgyzstan"],["LA","Laos"],["LV","Latvia"],["LB","Lebanon"],["LS","Lesotho"],["LR","Liberia"],["LY","Libya"],["LI","Liechtenstein"],["LT","Lithuania"],["LU","Luxembourg"],["MO","Macau"],["MG","Madagascar"],["MW","Malawi"],["MY","Malaysia"],["MV","Maldives"],["ML","Mali"],["MT","Malta"],["MH","Marshall Islands"],["MQ","Martinique"],["MR","Mauritania"],["MU","Mauritius"],["YT","Mayotte"],["MX","Mexico"],["FM","Micronesia"],["MD","Moldova"],["MC","Monaco"],["MN","Mongolia"],["ME","Montenegro"],["MS","Montserrat"],["MA","Morocco"],["MZ","Mozambique"],["MM","Myanmar"],["NA","Namibia"],["NR","Nauru"],["NP","Nepal"],["NL","Netherlands"],["NC","New Caledonia"],["NZ","New Zealand"],["NI","Nicaragua"],["NE","Niger"],["NG","Nigeria"],["NU","Niue"],["NF","Norfolk Island"],["KP","North Korea"],["MK","North Macedonia"],["MP","Northern Mariana Islands"],["NO","Norway"],["OM","Oman"],["PK","Pakistan"],["PW","Palau"],["PS","Palestine"],["PA","Panama"],["PG","Papua New Guinea"],["PY","Paraguay"],["PE","Peru"],["PH","Philippines"],["PN","Pitcairn"],["PL","Poland"],["PT","Portugal"],["PR","Puerto Rico"],["QA","Qatar"],["RO","Romania"],["RU","Russia"],["RW","Rwanda"],["RE","Réunion"],["BL","Saint Barthélemy"],["SH","Saint Helena, Ascension and Tristan da Cunha"],["KN","Saint Kitts and Nevis"],["LC","Saint Lucia"],["MF","Saint Martin (French part)"],["PM","Saint Pierre and Miquelon"],["VC","Saint Vincent and the Grenadines"],["WS","Samoa"],["SM","San Marino"],["ST","Sao Tome and Principe"],["SA","Saudi Arabia"],["SN","Senegal"],["RS","Serbia"],["SC","Seychelles"],["SL","Sierra Leone"],["SG","Singapore"],["SX","Sint Maarten"],["SK","Slovakia"],["SI","Slovenia"],["SB","Solomon Islands"],["SO","Somalia"],["ZA","South Africa"],["GS","South Georgia and the South Sandwich Islands"],["KR","South Korea"],["SS","South Sudan"],["ES","Spain"],["LK","Sri Lanka"],["SD","Sudan"],["SR","Suriname"],["SJ","Svalbard and Jan Mayen"],["SE","Sweden"],["CH","Switzerland"],["SY","Syria"],["TW","Taiwan"],["TJ","Tajikistan"],["TZ","Tanzania"],["TH","Thailand"],["TL","Timor-Leste"],["TG","Togo"],["TK","Tokelau"],["TO","Tonga"],["TT","Trinidad and Tobago"],["TN","Tunisia"],["TM","Turkmenistan"],["TC","Turks and Caicos Islands"],["TV","Tuvalu"],["TR","Türkiye"],["UM","US Minor Outlying Islands"],["VI","US Virgin Islands"],["UG","Uganda"],["UA","Ukraine"],["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["UY","Uruguay"],["UZ","Uzbekistan"],["VU","Vanuatu"],["VA","Vatican City"],["VE","Venezuela"],["VN","Vietnam"],["WF","Wallis and Futuna"],["EH","Western Sahara"],["YE","Yemen"],["ZM","Zambia"],["ZW","Zimbabwe"],["AX","Åland Islands"],["XX","Stateless"]];
 const AIRLINES = [["AA","American AAdvantage"],["DL","Delta SkyMiles"],["UA","United MileagePlus"],["WN","Southwest Rapid Rewards"],["B6","JetBlue TrueBlue"],["AS","Alaska Mileage Plan"],["AF","Air France-KLM Flying Blue"],["BA","British Airways Executive Club"],["EK","Emirates Skywards"],["LH","Lufthansa Miles & More"],["AC","Air Canada Aeroplan"],["VS","Virgin Atlantic Flying Club"],["QR","Qatar Privilege Club"],["EY","Etihad Guest"],["LY","El Al Matmid"],["SQ","Singapore KrisFlyer"],["CX","Cathay Pacific Asia Miles"],["QF","Qantas Frequent Flyer"],["NH","ANA Mileage Club"],["JL","JAL Mileage Bank"],["TK","Turkish Miles&Smiles"],["IB","Iberia Plus"],["LX","SWISS Miles & More"],["AM","Aeromexico Rewards"],["CM","Copa ConnectMiles"],["AV","Avianca LifeMiles"],["LA","LATAM Pass"],["KE","Korean Air SKYPASS"],["HA","Hawaiian HawaiianMiles"],["F9","Frontier Miles"],["NK","Spirit Free Spirit"]];
@@ -439,15 +447,27 @@ $$(".traveler-link").forEach(a => a.addEventListener("click", e => { e.preventDe
   if (mode==="advisor" || location.hash==="#advisor") showAdvisor();
   const agySel = $("#adv_agy"), agyTxt = $("#adv_agy_text");
   const syncAgy = () => {
-    const list = AGY_BY_PCC[$("#adv_pcc").value];
+    const pcc = $("#adv_pcc").value, list = AGY_BY_PCC[pcc];
+    agyTxt.value = "";
+    if (!pcc) {                       // nothing to pick from until a PCC is chosen
+      agySel.classList.remove("hidden"); agyTxt.classList.add("hidden");
+      agySel.innerHTML = '<option value="">Choose a PCC first</option>'; agySel.disabled = true;
+      $("#adv_agy_hint").textContent = "The list appears once you choose a PCC.";
+      return;
+    }
+    $("#adv_pcc").closest(".f").classList.remove("bad");
+    agySel.disabled = false;
     agySel.classList.toggle("hidden", !list); agyTxt.classList.toggle("hidden", !!list);
     agySel.innerHTML = '<option value="">None</option>' + (list || []).map(n => `<option>${n}</option>`).join("");
-    agyTxt.value = "";
+    if (list) agySel.value = AGY_DEFAULT[pcc] || (list.length === 1 ? list[0] : "");
     $("#adv_agy_hint").textContent = list ? "Pick from the agency profiles set up for this PCC." : "No list for this PCC yet. Type the exact profile name in Sabre.";
   };
   $("#adv_pcc").addEventListener("change", syncAgy); syncAgy();
+  // a link already on screen no longer matches once any answer changes, so take it down
+  ["input","change"].forEach(ev => $("#advisorpane").addEventListener(ev, e => { if (e.target.id !== "linkbox") $("#linkout").classList.add("hidden"); }));
   const agyValue = () => AGY_BY_PCC[$("#adv_pcc").value] ? agySel.value : agyTxt.value;
   $("#btn-link").addEventListener("click", () => {
+    if (!$("#adv_pcc").value) { $("#adv_pcc").closest(".f").classList.add("bad"); $("#linkout").classList.add("hidden"); $("#adv_pcc").focus(); return; }
     const base = location.origin + location.pathname;
     const p = new URLSearchParams();
     const put=(k,v)=>{ if(v && v.trim()) p.set(k, v.trim()); };
