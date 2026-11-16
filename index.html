@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Traveler profile · Chai Travel Advisors</title>
+<script>
+  // profiles.chaitravel.com on its own opens the advisor link builder.
+  // With link details after it (?pcc=...&adv=...) it passes straight through to the traveler form.
+  (function () {
+    var q = location.search && location.search.length > 1 ? location.search : "?mode=advisor";
+    location.replace("chai-traveler-profile-form.html" + q + location.hash);
+  })();
+</script>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; color: #242021; margin: 48px 24px; }
+  a { color: #242021; }
+  p { color: #5E5B5C; }
+</style>
+</head>
+<body>
+<noscript>
+  <p>Chai Travel Advisors traveler profiles.</p>
+  <p><a href="chai-traveler-profile-form.html?mode=advisor">Open the advisor link builder</a></p>
+</noscript>
+</body>
+</html>
